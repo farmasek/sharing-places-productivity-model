@@ -2,16 +2,20 @@
   "name": "mosim-sem",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://farmasek.github.io/sharing-places-productivity-model",
   "devDependencies": {
     "react-scripts": "1.0.17"
   },
   "dependencies": {
+    "gh-pages": "^1.1.0",
     "immutable": "^4.0.0-rc.9",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "styled-components": "^2.2.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
