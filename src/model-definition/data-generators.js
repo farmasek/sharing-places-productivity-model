@@ -1,4 +1,4 @@
-import { fromJS, List } from 'immutable';
+import { fromJS, OrderedMap } from 'immutable';
 import { placeType, teamName } from './definition-constants';
 
 export const developersConstants = {
@@ -15,11 +15,12 @@ export const supportConstants = {
 };
 
 const generatePlaces = (startAt, totalCount, totalStatic, team) => {
-  let developerData = new List();
+  let developerData = new OrderedMap();
   let total = 0;
 
   for (let position = startAt; position < startAt + totalCount; position++) {
-    developerData = developerData.push(
+    developerData = developerData.set(
+      position,
       fromJS({
         type: total < totalStatic ? placeType.static : placeType.shared,
         number: position,
@@ -31,9 +32,9 @@ const generatePlaces = (startAt, totalCount, totalStatic, team) => {
   return developerData;
 };
 
-export const generateAllSeats =()=> {
-  let allSeats = new List();
-  allSeats = allSeats.concat(
+export const generateAllSeats = () => {
+  let allSeats = new OrderedMap();
+  allSeats = allSeats.merge(
     generatePlaces(
       allSeats.size,
       developersConstants.totalCount,
@@ -41,7 +42,7 @@ export const generateAllSeats =()=> {
       teamName.developers,
     ),
   );
-  allSeats = allSeats.concat(
+  allSeats = allSeats.merge(
     generatePlaces(
       allSeats.size,
       supportConstants.totalCount,
@@ -49,7 +50,7 @@ export const generateAllSeats =()=> {
       teamName.support,
     ),
   );
-  allSeats = allSeats.concat(
+  allSeats = allSeats.merge(
     generatePlaces(
       allSeats.size,
       testersConstants.totalCount,

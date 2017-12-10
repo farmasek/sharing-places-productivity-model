@@ -21,7 +21,10 @@ export class PlaceField extends Component {
               .set('x', place.get('number') % 10)
               .set('y', Math.floor(place.get('number') / 10)),
           )
-          .map(place => <Place place={place} />)}
+          .toIndexedSeq()
+          .map(place => (
+            <Place key={`${place.get('x')}_${place.get('y')}`} place={place} />
+          ))}
       </StyledPlaceField>
     );
   }

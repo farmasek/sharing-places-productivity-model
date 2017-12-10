@@ -19,7 +19,7 @@ const StyledPlace = styled.div`
     place.get('type') === placeType.shared && ' box-shadow: inset 0 0 0px 2px green;'};
 `;
 export const Place = ({ place }) => (
-  <StyledPlace key={`${place.get('x')}_${place.get('y')}`} place={place}>
+  <StyledPlace  place={place}>
     {place.get('number')}
   </StyledPlace>
 );
