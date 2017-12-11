@@ -4,7 +4,8 @@ import './App.css';
 import { LogicProvider } from './LogicProvider';
 import { PlaceField } from './Elements/PlaceField';
 import styled from 'styled-components';
-
+import { TeamDetail } from './Elements/TeamDetail';
+import { teamDefinitions } from './model-definition/definition-constants';
 const StyledBody = styled.div`
   display: inline-flex;
   width: 100%;
@@ -28,18 +29,25 @@ class App extends Component {
             place.
           </h6>
         </header>
-        <StyledBody>
-          <StyledLegend>
-            <h3>Legend:</h3>
-          </StyledLegend>
-          <StyledSimulationBody>
-            <LogicProvider
-              render={({ state }) => (
+        <LogicProvider
+          render={({ state }) =>
+            <StyledBody>
+              <StyledLegend>
+                <h3>Legend:</h3>
+                {teamDefinitions.map(team =>
+                  <TeamDetail
+                    team={team}
+                    users={state
+                      .get('users')
+                      .filter(user => user.get('teamName') === team.teamName)}
+                  />
+                )}
+              </StyledLegend>
+              <StyledSimulationBody>
                 <PlaceField places={state.get('places')} />
-              )}
-            />
-          </StyledSimulationBody>
-        </StyledBody>
+              </StyledSimulationBody>
+            </StyledBody>}
+        />
       </div>
     );
   }

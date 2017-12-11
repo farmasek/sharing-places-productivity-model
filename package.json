@@ -7,6 +7,7 @@
     "react-scripts": "1.0.17"
   },
   "dependencies": {
+    "faker": "^4.1.0",
     "gh-pages": "^1.1.0",
     "immutable": "^4.0.0-rc.9",
     "react": "^16.2.0",

@@ -16,10 +16,17 @@ const StyledPlace = styled.div`
   top: ${({ place }) => calculateY(place.get('y'))}px;
   left: ${({ place }) => calculateX(place.get('x'))}px;
   ${({ place }) =>
-    place.get('type') === placeType.shared && ' box-shadow: inset 0 0 0px 2px green;'};
+    place.get('type') === placeType.shared &&
+    ' box-shadow: inset 0 0 0px 2px green;'};
 `;
-export const Place = ({ place }) => (
-  <StyledPlace  place={place}>
+const StyledUser = styled.p`
+  font-size: 10px;
+`;
+export const Place = ({ place }) =>
+  <StyledPlace place={place}>
     {place.get('number')}
-  </StyledPlace>
-);
+    {place.get('user') &&
+      <StyledUser>
+        {place.getIn(['user', 'firstName'])} {place.getIn(['user', 'lastName'])}
+      </StyledUser>}
+  </StyledPlace>;

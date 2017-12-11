@@ -12,7 +12,6 @@ const StyledPlaceField = styled.div`
 
 export class PlaceField extends Component {
   render() {
-    console.log(this.props.places);
     return (
       <StyledPlaceField>
         {this.props.places

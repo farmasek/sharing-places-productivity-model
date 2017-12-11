@@ -1,19 +1,6 @@
 import { fromJS, OrderedMap } from 'immutable';
-import { placeType, teamName } from './definition-constants';
-
-export const developersConstants = {
-  totalCount: 50,
-  totalStatic: 25,
-};
-export const testersConstants = {
-  totalCount: 20,
-  totalStatic: 12,
-};
-export const supportConstants = {
-  totalCount: 39,
-  totalStatic: 10,
-};
-
+import { placeType, teamDefinitions } from './definition-constants';
+import Faker from 'faker';
 const generatePlaces = (startAt, totalCount, totalStatic, team) => {
   let developerData = new OrderedMap();
   let total = 0;
@@ -25,7 +12,7 @@ const generatePlaces = (startAt, totalCount, totalStatic, team) => {
         type: total < totalStatic ? placeType.static : placeType.shared,
         number: position,
         team,
-      }),
+      })
     );
     total++;
   }
@@ -34,29 +21,38 @@ const generatePlaces = (startAt, totalCount, totalStatic, team) => {
 
 export const generateAllSeats = () => {
   let allSeats = new OrderedMap();
-  allSeats = allSeats.merge(
-    generatePlaces(
-      allSeats.size,
-      developersConstants.totalCount,
-      developersConstants.totalStatic,
-      teamName.developers,
-    ),
-  );
-  allSeats = allSeats.merge(
-    generatePlaces(
-      allSeats.size,
-      supportConstants.totalCount,
-      supportConstants.totalStatic,
-      teamName.support,
-    ),
-  );
-  allSeats = allSeats.merge(
-    generatePlaces(
-      allSeats.size,
-      testersConstants.totalCount,
-      testersConstants.totalStatic,
-      teamName.testers,
-    ),
-  );
+  teamDefinitions.forEach(team => {
+    allSeats = allSeats.merge(
+      generatePlaces(
+        allSeats.size,
+        team.totalCount,
+        team.totalStatic,
+        team.teamName
+      )
+    );
+  });
+
   return allSeats;
+};
+
+export const generateUsers = () => {
+    Faker.locale= 'cz'
+  let allUsers = new OrderedMap();
+
+  teamDefinitions.forEach(team => {
+    for (let i = 0; i < team.totalEmployees; i++) {
+      const id = Faker.random.uuid();
+      allUsers = allUsers.set(
+        id,
+        fromJS({
+          firstName: Faker.name.firstName(),
+          lastName: Faker.name.lastName(),
+          id,
+          teamName: team.teamName,
+          hasStaticPlace: i < team.totalStatic,
+        })
+      );
+    }
+  });
+  return allUsers;
 };
