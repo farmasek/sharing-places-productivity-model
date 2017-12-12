@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { User } from './User';
 
 const StyledTeam = styled.div`
   border: 2px solid ${props => props.color};
@@ -12,26 +13,24 @@ const StyledMembers = styled.div`
   padding: 1em;
 `;
 
-export const TeamDetail = ({ team, users }) =>
+export const TeamDetail = ({ team, users, showDetails = true }) =>
   <StyledTeam color={team.teamColor}>
     <h5>
       {team.teamName}
     </h5>
-    <u>Places</u>
-    <p>
-      Total:{team.totalCount}
-      {` `}
-      Static:{team.totalStatic}
-    </p>
-    <u>
-      Employees({team.totalEmployees})
-    </u>
-    <StyledMembers>
-      {users.toIndexedSeq().map(user =>
-        <p key={user.get('id')}>
-          {user.get('hasStaticPlace') && ` |S| `}
-          {user.get('firstName')} {user.get('lastName')}
+    {showDetails &&
+      <React.Fragment>
+        <u>Places</u>
+        <p>
+          Total:{team.totalCount}
+          {` `}
+          Static:{team.totalStatic}
         </p>
-      )}
+        <u>
+          Employees({team.totalEmployees})
+        </u>
+      </React.Fragment>}
+    <StyledMembers>
+      {users.toIndexedSeq().map(user => <User user={user} />)}
     </StyledMembers>
   </StyledTeam>;

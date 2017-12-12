@@ -35,14 +35,40 @@ export const generateAllSeats = () => {
   return allSeats;
 };
 
+const resolveHoCount = (team, index) => {
+  let i = index;
+  if (i < team.oneHO) {
+    return 1;
+  }
+  i = i - team.oneHO;
+  if (i < team.twoHO) {
+    return 2;
+  }
+  i = i - team.twoHO;
+  if (i < team.threeHO) {
+    return 3;
+  }
+  i = i - team.threeHO;
+  if (i < team.fourHO) {
+    return 4;
+  }
+  i = i - team.fourHO;
+  if (i < team.fiveHO) {
+    return 5;
+  }
+  return 0;
+};
+
 export const generateUsers = () => {
-    Faker.locale= 'cz'
+  Faker.locale = 'cz';
   let allUsers = new OrderedMap();
 
   teamDefinitions.forEach(team => {
+    let teamUsers = new OrderedMap();
+
     for (let i = 0; i < team.totalEmployees; i++) {
       const id = Faker.random.uuid();
-      allUsers = allUsers.set(
+      teamUsers = teamUsers.set(
         id,
         fromJS({
           firstName: Faker.name.firstName(),
@@ -50,9 +76,19 @@ export const generateUsers = () => {
           id,
           teamName: team.teamName,
           hasStaticPlace: i < team.totalStatic,
+          hoCount:
+            i < team.totalStatic
+              ? -1
+              : resolveHoCount(
+                  team,
+                  teamUsers.filter(user => !user.get('hasStaticPlace')).size
+                ),
         })
       );
     }
+    allUsers = allUsers.merge(
+      teamUsers.sort((u1, u2) => u1.get('hoCount') - u2.get('hoCount'))
+    );
   });
   return allUsers;
 };
