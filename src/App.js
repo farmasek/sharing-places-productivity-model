@@ -6,10 +6,12 @@ import { PlaceField } from './Elements/PlaceField';
 import styled from 'styled-components';
 import { TeamDetail } from './Elements/TeamDetail';
 import {
-  teamDefinitions,
-  teamName,
-  totalDays,
+    allSharedPlaces,
+    allWorkingDataset,
+    teamDefinitions,
+    teamName,
 } from './model-definition/definition-constants';
+import { Button } from './Elements/Button';
 const StyledBody = styled.div`
   display: inline-flex;
   width: 100%;
@@ -18,106 +20,171 @@ const StyledLegend = styled.div`
   width: 400px;
   background-color: #e7e7e7;
 `;
-const StyledSimulationBody = styled.div`min-width: 1000px`;
+const StyledTextArea = styled.textarea`
+  height: 150px;
+  width: 400px;
+`;
+const StyledSimulationBody = styled.div`min-width: 1000px;`;
+const StyledHeaderCol = styled.div`margin: 1em;`;
 
 class App extends Component {
   state = { tab: 0 };
+  tryParseDataset = (dataset, applyDataset) => () => {
+    try {
+      applyDataset(JSON.parse(dataset));
+    } catch (e) {
+      applyDataset([]);
+    }
+  };
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome Mosim Simulation project</h1>
-          <h6>
-            Openspace has only limited amount of places to work. There is
-            possibility to have Home-office, have static place or sit on shared
-            place.
-          </h6>
-        </header>
-        <LogicProvider
-          render={({ state, simulateReservationsForNextDay, selectDay }) =>
+      <LogicProvider
+        render={({
+          state,
+          simulateReservationsForNextDay,
+          selectDay,
+          applyDataset,
+          activeTeamDefinition,
+          editTeamDefinition,
+          editingTeamDefinition,
+        }) => (
+          <div className="App">
+            <StyledBody className="App-header">
+              <StyledHeaderCol>
+                <h3>MOSIM model project</h3>
+                <p>
+                  This model models and simulates usage of working place in
+                  office
+                </p>
+              </StyledHeaderCol>
+              <StyledTextArea
+                value={editingTeamDefinition}
+                onChange={editTeamDefinition}
+              />
+              <StyledHeaderCol>
+                <h5>model verification datasets (usually after 5 days)</h5>
+                <Button onClick={() => applyDataset(allWorkingDataset)}>
+                  Everybody should be at work every day
+                </Button>
+                <Button onClick={() => applyDataset(allSharedPlaces)}>
+                  Everybody can one HO, more employees than places
+                </Button>
+              </StyledHeaderCol>
+            </StyledBody>
             <StyledBody>
               <StyledLegend>
                 <h3>Legend:</h3>
-                {teamDefinitions.map(team =>
+                {activeTeamDefinition.map(team => (
                   <TeamDetail
+                    key={team.teamName}
                     team={team}
                     users={state
                       .get('users')
                       .filter(user => user.get('teamName') === team.teamName)}
                   />
-                )}
+                ))}
               </StyledLegend>
               <StyledSimulationBody>
                 <div>
-                  <button onClick={() => this.setState({ tab: 0 })}>
+                  <Button
+                    onClick={this.tryParseDataset(
+                      editingTeamDefinition,
+                      applyDataset,
+                    )}
+                  >
+                    Apply new dataset
+                  </Button>
+                  <Button
+                    active={this.state.tab === 0}
+                    onClick={() => this.setState({ tab: 0 })}
+                  >
                     Places occupied
-                  </button>
-                  <button onClick={() => this.setState({ tab: 1 })}>
+                  </Button>
+                  <Button
+                    active={this.state.tab === 1}
+                    onClick={() => this.setState({ tab: 1 })}
+                  >
                     People without place
-                  </button>
+                  </Button>
                 </div>
-                {this.state.tab === 0 &&
+                {this.state.tab === 0 && (
                   <PlaceField
                     places={
-                      state.get('selectedDay') === -1
-                        ? state.get('places')
-                        : state.getIn(['dayPlaces', state.get('selectedDay')])
+                      state.get('selectedDay') === -1 ? (
+                        state.get('places')
+                      ) : (
+                        state.getIn(['dayPlaces', state.get('selectedDay')])
+                      )
                     }
-                  />}
-                {this.state.tab === 1 &&
+                  />
+                )}
+                {this.state.tab === 1 && (
                   <div>
-                    {state.get('selectedDay') > -1 &&
-                      teamDefinitions
+                    {state.get('selectedDay') > -1 ? (
+                      activeTeamDefinition
                         .filter(team => team.teamName !== teamName.free)
-                        .map(team =>
+                        .map(team => (
                           <TeamDetail
+                            key={team.teamName}
                             showDetails={false}
                             team={team}
                             users={state
                               .getIn(['dayUsers', state.get('selectedDay')])
                               .filter(
-                                user => user.get('teamName') === team.teamName
+                                user => user.get('teamName') === team.teamName,
                               )
                               .filter(user => !user.get('hasStaticPlace'))
                               .filter(user => user.get('hoCount') < 0)}
                           />
-                        )}
-                  </div>}
+                        ))
+                    ) : (
+                      <p>No day selected.</p>
+                    )}
+                  </div>
+                )}
               </StyledSimulationBody>
               <StyledLegend>
-                <button onClick={simulateReservationsForNextDay}>
+                <Button onClick={simulateReservationsForNextDay}>
                   Simulate reservations
-                </button>
+                </Button>
                 <br />
                 <h4>Select day</h4>
-                <button onClick={selectDay(-1)}>Default day</button>
+                <Button onClick={selectDay(-1)}>Default day</Button>
                 <br />
-                {state.get('dayPlaces').toIndexedSeq().map((val, num) =>
-                  <button key={num} onClick={selectDay(num)}>
-                    {num + 1}
-                  </button>
-                )}
+                {state
+                  .get('dayPlaces')
+                  .toIndexedSeq()
+                  .map((val, num) => (
+                    <Button
+                      active={state.get('selectedDay') === num}
+                      key={num}
+                      onClick={selectDay(num)}
+                    >
+                      {num + 1}
+                    </Button>
+                  ))}
                 <p>HO left</p>
                 {state.get('selectedDay') > -1 &&
-                  teamDefinitions
+                  activeTeamDefinition
                     .filter(team => team.teamName !== teamName.free)
-                    .map(team =>
+                    .map(team => (
                       <TeamDetail
+                        key={team.teamName}
                         showDetails={false}
                         team={team}
                         users={state
                           .getIn(['dayUsers', state.get('selectedDay')])
                           .filter(
-                            user => user.get('teamName') === team.teamName
+                            user => user.get('teamName') === team.teamName,
                           )
                           .filter(user => user.get('hoCount') > 0)}
                       />
-                    )}
+                    ))}
               </StyledLegend>
-            </StyledBody>}
-        />
-      </div>
+            </StyledBody>
+          </div>
+        )}
+      />
     );
   }
 }

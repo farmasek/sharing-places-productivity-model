@@ -1,7 +1,7 @@
 import { fromJS, OrderedMap } from 'immutable';
-import { placeType, teamDefinitions } from './definition-constants';
+import { placeType, } from './definition-constants';
 import Faker from 'faker';
-const generatePlaces = (startAt, totalCount, totalStatic, team) => {
+const generatePlaces = (startAt, totalCount, totalStatic, team, teamColor) => {
   let developerData = new OrderedMap();
   let total = 0;
 
@@ -12,23 +12,25 @@ const generatePlaces = (startAt, totalCount, totalStatic, team) => {
         type: total < totalStatic ? placeType.static : placeType.shared,
         number: position,
         team,
-      })
+        teamColor,
+      }),
     );
     total++;
   }
   return developerData;
 };
 
-export const generateAllSeats = () => {
+export const generateAllSeats = (teamDefinitions) => {
   let allSeats = new OrderedMap();
   teamDefinitions.forEach(team => {
     allSeats = allSeats.merge(
       generatePlaces(
         allSeats.size,
-        team.totalCount,
+        team.totalWorkspaces,
         team.totalStatic,
-        team.teamName
-      )
+        team.teamName,
+        team.teamColor,
+      ),
     );
   });
 
@@ -59,7 +61,7 @@ const resolveHoCount = (team, index) => {
   return 0;
 };
 
-export const generateUsers = () => {
+export const generateUsers = (teamDefinitions) => {
   Faker.locale = 'cz';
   let allUsers = new OrderedMap();
 
@@ -81,13 +83,13 @@ export const generateUsers = () => {
               ? -1
               : resolveHoCount(
                   team,
-                  teamUsers.filter(user => !user.get('hasStaticPlace')).size
+                  teamUsers.filter(user => !user.get('hasStaticPlace')).size,
                 ),
-        })
+        }),
       );
     }
     allUsers = allUsers.merge(
-      teamUsers.sort((u1, u2) => u1.get('hoCount') - u2.get('hoCount'))
+      teamUsers.sort((u1, u2) => u1.get('hoCount') - u2.get('hoCount')),
     );
   });
   return allUsers;

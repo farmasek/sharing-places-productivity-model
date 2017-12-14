@@ -7,7 +7,6 @@ const StyledPlaceField = styled.div`
   position: relative;
   width: 1000px;
   height: 1000px;
-  background-color: aqua;
 `;
 
 export class PlaceField extends Component {
