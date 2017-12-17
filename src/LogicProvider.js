@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { initialState } from './model-definition/state';
 import { assignEmployeesToPlace } from './model-definition/place-assigner';
 import { teamDefinitions } from './model-definition/definition-constants';
+import { Range } from 'immutable';
 
 export class LogicProvider extends Component {
   state = {
@@ -16,18 +17,14 @@ export class LogicProvider extends Component {
     });
 
   applyDataset = newDataset => {
-    console.log('getting rect:', newDataset);
-
-
     this.setState({
       data: initialState(newDataset),
       activeTeamDefinition: newDataset,
-      editingTeamDefinition: JSON.stringify(newDataset, null, 2)
+      editingTeamDefinition: JSON.stringify(newDataset, null, 2),
     });
   };
   editTeamDefinition = e => {
-    console.log('ee', e.target.value);
-    this.setState({ editingTeamDefinition: e.target.value});
+    this.setState({ editingTeamDefinition: e.target.value });
   };
   simulateReservationsForNextDay = () => {
     const { data, activeTeamDefinition } = this.state;
@@ -37,6 +34,7 @@ export class LogicProvider extends Component {
       activeTeamDefinition,
       nextDay <= 0 ? data.get('users') : data.getIn(['dayUsers', nextDay - 1]),
       data.get('places'),
+      nextDay,
     );
     // for (let i = 0; i < totalDays; i++) {
     nextState = nextState
@@ -46,13 +44,32 @@ export class LogicProvider extends Component {
     // }
     this.setState({ data: nextState });
   };
+
+  simulateReservationsForWeek = () => {
+    const range = Range(0, 5);
+    const { data, activeTeamDefinition } = this.state;
+    let nextState = data;
+    range.forEach(nextDay => {
+      console.log('dazyo;', nextDay);
+      const { dayPlaces, dayUsers } = assignEmployeesToPlace(
+        activeTeamDefinition,
+        nextDay <= 0
+          ? nextState.get('users')
+          : nextState.getIn(['dayUsers', nextDay - 1]),
+          nextState.get('places'),
+        nextDay,
+      );
+      nextState = nextState
+        .setIn(['dayPlaces', nextDay], dayPlaces)
+        .setIn(['dayUsers', nextDay], dayUsers);
+    });
+    this.setState({ data: nextState });
+  };
   selectDay = day => () =>
     this.setState({ data: this.state.data.set('selectedDay', day) });
 
   render() {
     console.log('state:', this.state.data.toJS());
-    console.log('activeDefinition:', this.state.activeTeamDefinition);
-    console.log('activeDefinition:', this.state.editingTeamDefinition);
 
     return this.props.render({
       state: this.state.data,
@@ -63,6 +80,7 @@ export class LogicProvider extends Component {
       activeTeamDefinition: this.state.activeTeamDefinition,
       editTeamDefinition: this.editTeamDefinition,
       editingTeamDefinition: this.state.editingTeamDefinition,
+      simulateReservationsForWeek: this.simulateReservationsForWeek,
     });
   }
 }

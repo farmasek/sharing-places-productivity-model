@@ -26,7 +26,12 @@ export const initialAssign = (teamDefinitions, users, places) => {
   return assignedPlaces;
 };
 
-export const assignEmployeesToPlace = (teamDefinitions, users, places) => {
+export const assignEmployeesToPlace = (
+  teamDefinitions,
+  users,
+  places,
+  actualDay,
+) => {
   let nextUsers = users;
   let assignedPlaces = places;
   teamDefinitions
@@ -40,7 +45,7 @@ export const assignEmployeesToPlace = (teamDefinitions, users, places) => {
         )
         .forEach(user => {
           let userNextHOCount = user.get('hoCount') - 1;
-          if (userNextHOCount <= 0) {
+          if (5 - user.get('hoCount') > actualDay) {
             let place = assignedPlaces.find(
               place =>
                 place.get('type') === placeType.shared &&
@@ -50,9 +55,8 @@ export const assignEmployeesToPlace = (teamDefinitions, users, places) => {
             if (place) {
               assignedPlaces = assignedPlaces.setIn(
                 [place.get('number'), 'user'],
-                user.set('hoCount', 0),
+                user,
               );
-              nextUsers = nextUsers.set(user.get('id'), user.set('hoCount', 0));
             } else {
               let freePlace = assignedPlaces.find(
                 place =>
@@ -63,11 +67,7 @@ export const assignEmployeesToPlace = (teamDefinitions, users, places) => {
               if (freePlace) {
                 assignedPlaces = assignedPlaces.setIn(
                   [freePlace.get('number'), 'user'],
-                  user.set('hoCount', 0),
-                );
-                nextUsers = nextUsers.set(
-                  user.get('id'),
-                  user.set('hoCount', 0),
+                  user,
                 );
               } else {
                 nextUsers = nextUsers.set(
@@ -77,7 +77,6 @@ export const assignEmployeesToPlace = (teamDefinitions, users, places) => {
               }
             }
           } else {
-
             nextUsers = nextUsers.set(
               user.get('id'),
               user.set('hoCount', userNextHOCount),

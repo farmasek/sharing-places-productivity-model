@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { LogicProvider } from './LogicProvider';
 import { PlaceField } from './Elements/PlaceField';
 import styled from 'styled-components';
 import { TeamDetail } from './Elements/TeamDetail';
 import {
-    allSharedPlaces,
-    allWorkingDataset,
-    teamDefinitions,
-    teamName,
+  allWorkingDataset,
+  fullHo,
+  reducedByHalf,
+  teamName,
 } from './model-definition/definition-constants';
 import { Button } from './Elements/Button';
 const StyledBody = styled.div`
@@ -47,6 +46,7 @@ class App extends Component {
           activeTeamDefinition,
           editTeamDefinition,
           editingTeamDefinition,
+          simulateReservationsForWeek,
         }) => (
           <div className="App">
             <StyledBody className="App-header">
@@ -66,8 +66,11 @@ class App extends Component {
                 <Button onClick={() => applyDataset(allWorkingDataset)}>
                   Everybody should be at work every day
                 </Button>
-                <Button onClick={() => applyDataset(allSharedPlaces)}>
-                  Everybody can one HO, more employees than places
+                <Button onClick={() => applyDataset(reducedByHalf)}>
+                  10*2HO and 10*3HO should reduce workspaces by half
+                </Button>
+                <Button onClick={() => applyDataset(fullHo)}>
+                  Everybody can 5 HO, nobody should be at workspace
                 </Button>
               </StyledHeaderCol>
             </StyledBody>
@@ -134,7 +137,20 @@ class App extends Component {
                                 user => user.get('teamName') === team.teamName,
                               )
                               .filter(user => !user.get('hasStaticPlace'))
-                              .filter(user => user.get('hoCount') < 0)}
+                              .filter(user => user.get('hoCount') < 0)
+                              .filter(
+                                user =>
+                                  !state
+                                    .getIn([
+                                      'dayPlaces',
+                                      state.get('selectedDay'),
+                                    ])
+                                    .find(
+                                      place =>
+                                        place.getIn(['user', 'id']) ===
+                                        user.get('id'),
+                                    ),
+                              )}
                           />
                         ))
                     ) : (
@@ -144,7 +160,7 @@ class App extends Component {
                 )}
               </StyledSimulationBody>
               <StyledLegend>
-                <Button onClick={simulateReservationsForNextDay}>
+                <Button onClick={simulateReservationsForWeek}>
                   Simulate reservations
                 </Button>
                 <br />

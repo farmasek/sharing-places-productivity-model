@@ -92,16 +92,16 @@ export const allWorkingDataset = [
   },
 ];
 
-export const allSharedPlaces = [
+export const reducedByHalf = [
   {
     teamName: 'developers',
     teamColor: '#5c8bff',
     totalEmployees: 20,
-    totalWorkspaces: 15,
+    totalWorkspaces: 10,
     totalStatic: 0,
-    oneHO: 15,
-    twoHO: 0,
-    threeHO: 0,
+    oneHO: 0,
+    twoHO: 10,
+    threeHO: 10,
     fourHO: 0,
     fiveHO: 0,
   },
@@ -109,13 +109,47 @@ export const allSharedPlaces = [
     teamName: 'testers',
     teamColor: '#ff9c32',
     totalEmployees: 5,
-    totalWorkspaces: 5,
-    totalStatic: 5,
+    totalWorkspaces: 3,
+    totalStatic: 0,
+    oneHO: 0,
+    twoHO: 3,
+    threeHO: 3,
+    fourHO: 0,
+    fiveHO: 0,
+  },
+  {
+    teamName: 'free',
+    teamColor: '#2dff00',
+    totalEmployees: 0,
+    totalWorkspaces: 0,
+    totalStatic: 0,
+  },
+];
+
+export const fullHo = [
+  {
+    teamName: 'developers',
+    teamColor: '#5c8bff',
+    totalEmployees: 20,
+    totalWorkspaces: 10,
+    totalStatic: 0,
     oneHO: 0,
     twoHO: 0,
     threeHO: 0,
     fourHO: 0,
-    fiveHO: 0,
+    fiveHO: 20,
+  },
+  {
+    teamName: 'testers',
+    teamColor: '#ff9c32',
+    totalEmployees: 5,
+    totalWorkspaces: 1,
+    totalStatic: 0,
+    oneHO: 0,
+    twoHO: 0,
+    threeHO: 0,
+    fourHO: 0,
+    fiveHO: 5,
   },
   {
     teamName: 'free',
