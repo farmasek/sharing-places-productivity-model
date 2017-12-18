@@ -13,24 +13,29 @@ const StyledMembers = styled.div`
   padding: 1em;
 `;
 
-export const TeamDetail = ({ team, users, showDetails = true }) =>
+export const TeamDetail = ({ team, users, showDetails = true }) => (
   <StyledTeam color={team.teamColor}>
-    <h5>
-      {team.teamName}
-    </h5>
-    {showDetails &&
+    <h5>{team.teamName}</h5>
+    {showDetails && (
       <React.Fragment>
         <u>Places</u>
         <p>
-          Total:{team.totalCount}
+          Total:{team.totalWorkspaces}
           {` `}
           Static:{team.totalStatic}
         </p>
-        <u>
-          Employees({team.totalEmployees})
-        </u>
-      </React.Fragment>}
+        <u>Employees({team.totalEmployees})</u>
+      </React.Fragment>
+    )}
     <StyledMembers>
-      {users.toIndexedSeq().map(user => <User user={user} />)}
+      {users
+        .toIndexedSeq()
+        .map(user => (
+          <User
+            key={`${user.get('firstName')} ${user.get('lastName')}`}
+            user={user}
+          />
+        ))}
     </StyledMembers>
-  </StyledTeam>;
+  </StyledTeam>
+);
