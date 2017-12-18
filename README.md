@@ -23,3 +23,6 @@ Dataset is defined as array of teams, where on team definition is:
     fiveHO: 4, // number of people allowed five work from home
   },
 ```
+
+----
+### This project also shows difference and usage of Render prop pattern and Higher order component pattern

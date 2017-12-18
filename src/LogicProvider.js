@@ -34,7 +34,7 @@ export class LogicProvider extends Component {
       activeTeamDefinition,
       nextDay <= 0 ? data.get('users') : data.getIn(['dayUsers', nextDay - 1]),
       data.get('places'),
-      nextDay,
+      nextDay
     );
     nextState = nextState
       .setIn(['dayPlaces', nextDay], dayPlaces)
@@ -48,14 +48,13 @@ export class LogicProvider extends Component {
     const { data, activeTeamDefinition } = this.state;
     let nextState = data;
     range.forEach(nextDay => {
-      console.log('dazyo;', nextDay);
       const { dayPlaces, dayUsers } = assignEmployeesToPlace(
         activeTeamDefinition,
         nextDay <= 0
           ? nextState.get('users')
           : nextState.getIn(['dayUsers', nextDay - 1]),
-          nextState.get('places'),
-        nextDay,
+        nextState.get('places'),
+        nextDay
       );
       nextState = nextState
         .setIn(['dayPlaces', nextDay], dayPlaces)
