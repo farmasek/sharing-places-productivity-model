@@ -7,8 +7,11 @@ import { TeamDetail } from './Elements/TeamDetail';
 import {
   allWorkingDataset,
   fullHo,
+  noHoWithoutFree,
   reducedByHalf,
+  reducingSeatsUsingHO,
   teamName,
+  usingFreeSpacesNoHO,
 } from './model-definition/definition-constants';
 import { Button } from './Elements/Button';
 import { withLogic } from './LogicProviderHoC';
@@ -70,6 +73,15 @@ class AppWithHoc extends Component {
             </Button>
             <Button onClick={() => applyDataset(fullHo)}>
               Everybody can 5 HO, nobody should be at workspace
+            </Button>
+            <Button onClick={() => applyDataset(usingFreeSpacesNoHO)}>
+              Nobody can HO but can seat on free workstations
+            </Button>
+            <Button onClick={() => applyDataset(noHoWithoutFree)}>
+              Nobody can HO and no free spaces, not enough workstations
+            </Button>
+            <Button onClick={() => applyDataset(reducingSeatsUsingHO)}>
+              Allowing HO reducing count of workstations
             </Button>
           </StyledHeaderCol>
         </StyledBody>

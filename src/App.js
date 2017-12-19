@@ -7,8 +7,11 @@ import { TeamDetail } from './Elements/TeamDetail';
 import {
   allWorkingDataset,
   fullHo,
+  noHoWithoutFree,
   reducedByHalf,
+  reducingSeatsUsingHO,
   teamName,
+  usingFreeSpacesNoHO,
 } from './model-definition/definition-constants';
 import { Button } from './Elements/Button';
 const StyledBody = styled.div`
@@ -47,7 +50,7 @@ class App extends Component {
           editTeamDefinition,
           editingTeamDefinition,
           simulateReservationsForWeek,
-        }) => (
+        }) =>
           <div className="App">
             <StyledBody className="App-header">
               <StyledHeaderCol>
@@ -72,12 +75,21 @@ class App extends Component {
                 <Button onClick={() => applyDataset(fullHo)}>
                   Everybody can 5 HO, nobody should be at workspace
                 </Button>
+                <Button onClick={() => applyDataset(usingFreeSpacesNoHO)}>
+                  Nobody can HO but can seat on free workstations
+                </Button>
+                <Button onClick={() => applyDataset(noHoWithoutFree)}>
+                  Nobody can HO and no free spaces, not enough workstations
+                </Button>
+                <Button onClick={() => applyDataset(reducingSeatsUsingHO)}>
+                  Allowing HO reducing count of workstations
+                </Button>
               </StyledHeaderCol>
             </StyledBody>
             <StyledBody>
               <StyledLegend>
                 <h3>Legend:</h3>
-                {activeTeamDefinition.map(team => (
+                {activeTeamDefinition.map(team =>
                   <TeamDetail
                     key={team.teamName}
                     team={team}
@@ -85,14 +97,14 @@ class App extends Component {
                       .get('users')
                       .filter(user => user.get('teamName') === team.teamName)}
                   />
-                ))}
+                )}
               </StyledLegend>
               <StyledSimulationBody>
                 <div>
                   <Button
                     onClick={this.tryParseDataset(
                       editingTeamDefinition,
-                      applyDataset,
+                      applyDataset
                     )}
                   >
                     Apply new dataset
@@ -110,54 +122,48 @@ class App extends Component {
                     People without place
                   </Button>
                 </div>
-                {this.state.tab === 0 && (
+                {this.state.tab === 0 &&
                   <PlaceField
                     places={
-                      state.get('selectedDay') === -1 ? (
-                        state.get('places')
-                      ) : (
-                        state.getIn(['dayPlaces', state.get('selectedDay')])
-                      )
+                      state.get('selectedDay') === -1
+                        ? state.get('places')
+                        : state.getIn(['dayPlaces', state.get('selectedDay')])
                     }
-                  />
-                )}
-                {this.state.tab === 1 && (
+                  />}
+                {this.state.tab === 1 &&
                   <div>
-                    {state.get('selectedDay') > -1 ? (
-                      activeTeamDefinition
-                        .filter(team => team.teamName !== teamName.free)
-                        .map(team => (
-                          <TeamDetail
-                            key={team.teamName}
-                            showDetails={false}
-                            team={team}
-                            users={state
-                              .getIn(['dayUsers', state.get('selectedDay')])
-                              .filter(
-                                user => user.get('teamName') === team.teamName,
-                              )
-                              .filter(user => !user.get('hasStaticPlace'))
-                              .filter(user => user.get('hoCount') < 0)
-                              .filter(
-                                user =>
-                                  !state
-                                    .getIn([
-                                      'dayPlaces',
-                                      state.get('selectedDay'),
-                                    ])
-                                    .find(
-                                      place =>
-                                        place.getIn(['user', 'id']) ===
-                                        user.get('id'),
-                                    ),
-                              )}
-                          />
-                        ))
-                    ) : (
-                      <p>No day selected.</p>
-                    )}
-                  </div>
-                )}
+                    {state.get('selectedDay') > -1
+                      ? activeTeamDefinition
+                          .filter(team => team.teamName !== teamName.free)
+                          .map(team =>
+                            <TeamDetail
+                              key={team.teamName}
+                              showDetails={false}
+                              team={team}
+                              users={state
+                                .getIn(['dayUsers', state.get('selectedDay')])
+                                .filter(
+                                  user => user.get('teamName') === team.teamName
+                                )
+                                .filter(user => !user.get('hasStaticPlace'))
+                                .filter(user => user.get('hoCount') < 0)
+                                .filter(
+                                  user =>
+                                    !state
+                                      .getIn([
+                                        'dayPlaces',
+                                        state.get('selectedDay'),
+                                      ])
+                                      .find(
+                                        place =>
+                                          place.getIn(['user', 'id']) ===
+                                          user.get('id')
+                                      )
+                                )}
+                            />
+                          )
+                      : <p>No day selected.</p>}
+                  </div>}
               </StyledSimulationBody>
               <StyledLegend>
                 <Button onClick={simulateReservationsForWeek}>
@@ -167,23 +173,20 @@ class App extends Component {
                 <h4>Select day</h4>
                 <Button onClick={selectDay(-1)}>Default day</Button>
                 <br />
-                {state
-                  .get('dayPlaces')
-                  .toIndexedSeq()
-                  .map((val, num) => (
-                    <Button
-                      active={state.get('selectedDay') === num}
-                      key={num}
-                      onClick={selectDay(num)}
-                    >
-                      {num + 1}
-                    </Button>
-                  ))}
+                {state.get('dayPlaces').toIndexedSeq().map((val, num) =>
+                  <Button
+                    active={state.get('selectedDay') === num}
+                    key={num}
+                    onClick={selectDay(num)}
+                  >
+                    {num + 1}
+                  </Button>
+                )}
                 <p>HO left</p>
                 {state.get('selectedDay') > -1 &&
                   activeTeamDefinition
                     .filter(team => team.teamName !== teamName.free)
-                    .map(team => (
+                    .map(team =>
                       <TeamDetail
                         key={team.teamName}
                         showDetails={false}
@@ -191,15 +194,14 @@ class App extends Component {
                         users={state
                           .getIn(['dayUsers', state.get('selectedDay')])
                           .filter(
-                            user => user.get('teamName') === team.teamName,
+                            user => user.get('teamName') === team.teamName
                           )
                           .filter(user => user.get('hoCount') > 0)}
                       />
-                    ))}
+                    )}
               </StyledLegend>
             </StyledBody>
-          </div>
-        )}
+          </div>}
       />
     );
   }
