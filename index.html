@@ -25,33 +25,8 @@
     href="/sharing-places-productivity-model/favicon.ico">
 
   <title>React App</title>
-  <script src="https://sdk.pushy.me/web/1.0.0/pushy-sdk.js" />
 
 
-  <script>
-    Pushy.register()
-      .then(function(deviceToken) {
-        // Print device token to console
-        console.log('Pushy device token: ' + deviceToken);
-
-        // Send the token to your backend server via an HTTP GET request
-        //fetch('https://your.api.hostname/register/device?token=' + deviceToken);
-
-        // Succeeded, optionally do something to alert the user
-        if (Pushy.isRegistered()) {
-          // Subscribe the device to a topic
-          Pushy.subscribe('news').catch(function(err) {
-            // Handle subscription errors
-            console.error('Subscribe failed:', err);
-          });
-        }
-      })
-      .catch(function(err) {
-        // Handle registration errors
-        console.error(err);
-      });
-
-  </script>
 
   <link href="/sharing-places-productivity-model/static/css/main.6ddd4f86.css"
     rel="stylesheet">
@@ -66,6 +41,33 @@
     <script type="text/javascript"
       src="/sharing-places-productivity-model/static/js/main.12b3545d.js"></body> </html>
     </script>
+<script src="https://sdk.pushy.me/web/1.0.0/pushy-sdk.js" />
+
+<script>
+    console.log('pususususu');
+    Pushy.register()
+        .then(function(deviceToken) {
+            // Print device token to console
+            console.log('Pushy device token: ' + deviceToken);
+
+            // Send the token to your backend server via an HTTP GET request
+            //fetch('https://your.api.hostname/register/device?token=' + deviceToken);
+
+            // Succeeded, optionally do something to alert the user
+            if (Pushy.isRegistered()) {
+                // Subscribe the device to a topic
+                Pushy.subscribe('news').catch(function(err) {
+                    // Handle subscription errors
+                    console.error('Subscribe failed:', err);
+                });
+            }
+        })
+        .catch(function(err) {
+            // Handle registration errors
+            console.error(err);
+        });
+
+</script>
   </div>
 </body>
 </html>
